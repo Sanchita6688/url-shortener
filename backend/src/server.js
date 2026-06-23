@@ -1,24 +1,30 @@
 import express from "express"
-import router from "./routes/url.js";
+import urlRoute from "./routes/url.js";
+import shortIdRoute from "./routes/shortIdRoute.js"
 import connectToMongodb from "./config/db.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const app = express();
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
+
+app.use(express.json());
+app.use("/url", urlRoute);
+app.use("/", shortIdRoute);
+
+app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
+});
 
 connectToMongodb(process.env.MONGODB_URL)
     .then(() => {
         console.log("Connected to MongoDB successfully");
+        app.listen(PORT, () => {
+            console.log("server is running on PORT", PORT);
+        });
     })
     .catch((err) => {
-        console.log("MongoDB connection failed:", err);
+        console.error("MongoDB connection failed:", err);
+        process.exit(1);
     });
-
-app.use(express.json());
-app.use("/url",router);
-
-app.listen(PORT,() => {
-    console.log("server is running on PORT",PORT);
-})
