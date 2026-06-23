@@ -1,6 +1,7 @@
 import express from "express"
 import urlRoute from "./routes/url.js";
-import shortIdRoute from "./routes/shortIdRoute.js"
+import redirectRoute from "./routes/redirect.js";
+import analyticsRoute from "./routes/analytics.js";
 import connectToMongodb from "./config/db.js";
 import dotenv from "dotenv";
 
@@ -11,7 +12,8 @@ const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use("/url", urlRoute);
-app.use("/", shortIdRoute);
+app.use("/analytics", analyticsRoute);
+app.use("/", redirectRoute);
 
 app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
